@@ -41,3 +41,20 @@ cc_binary(
         "//mediapipe/graphs/object_detection_3d:desktop_cpu_calculators",
     ],
 )
+
+cc_binary(
+    name = "objectron_cpu_new",
+    data = [
+        "//mediapipe/modules/objectron:object_detection_3d_camera.tflite",
+        "//mediapipe/modules/objectron:object_detection_3d_chair.tflite",
+        "//mediapipe/modules/objectron:object_detection_3d_chair_1stage.tflite",
+        "//mediapipe/modules/objectron:object_detection_3d_cup.tflite",
+        "//mediapipe/modules/objectron:object_detection_3d_sneakers.tflite",
+        "//mediapipe/modules/objectron:object_detection_3d_sneakers_1stage.tflite",
+        "//mediapipe/modules/objectron:object_detection_ssd_mobilenetv2_oidv4_fp16.tflite",
+    ],
+    deps = [
+        "//mediapipe/examples/desktop:simple_run_graph_main",
+        "//mediapipe/graphs/object_detection_3d:desktop_cpu_calculators_new",
+    ],
+)

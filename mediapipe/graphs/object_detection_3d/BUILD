@@ -63,6 +63,18 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "desktop_cpu_calculators_new",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//mediapipe/calculators/core:constant_side_packet_calculator",
+        "//mediapipe/calculators/video:opencv_video_decoder_calculator",
+        "//mediapipe/calculators/video:opencv_video_encoder_calculator",
+        "//mediapipe/graphs/object_detection_3d/subgraphs:renderer_cpu",
+        "//mediapipe/modules/objectron:objectron_cpu_with_calibration",
+    ],
+)
+
 mediapipe_binary_graph(
     name = "mobile_gpu_binary_graph",
     graph = "object_occlusion_tracking.pbtxt",

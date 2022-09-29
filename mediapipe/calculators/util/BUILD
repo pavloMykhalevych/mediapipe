@@ -19,6 +19,20 @@ licenses(["notice"])
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
+    name = "check_vector_empty_calculator",
+    srcs = ["check_vector_empty_calculator.cc"],
+    hdrs = ["check_vector_empty_calculator.h"],
+    visibility = [
+        "//visibility:public",
+    ],
+    deps = [
+        "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework/formats:detection_cc_proto",
+    ],
+    alwayslink = 1,
+)
+
+cc_library(
     name = "alignment_points_to_rects_calculator",
     srcs = ["alignment_points_to_rects_calculator.cc"],
     visibility = ["//visibility:public"],

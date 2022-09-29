@@ -35,6 +35,7 @@ typedef std::vector<std::pair<int, float>> IndexedScores;
 namespace {
 
 constexpr char kImageTag[] = "IMAGE";
+constexpr char kThresholdTag[] = "THRESHOLD";
 
 bool SortBySecond(const std::pair<int, float>& indexed_score_0,
                   const std::pair<int, float>& indexed_score_1) {
@@ -160,6 +161,9 @@ class NonMaxSuppressionCalculator : public CalculatorBase {
     if (cc->Inputs().HasTag(kImageTag)) {
       cc->Inputs().Tag(kImageTag).Set<ImageFrame>();
     }
+    if (cc->InputSidePackets().HasTag(kThresholdTag)) {
+        cc->InputSidePackets().Tag(kThresholdTag).Set<double>();
+    }
     for (int k = 0; k < options.num_detection_streams(); ++k) {
       cc->Inputs().Index(k).Set<Detections>();
     }
@@ -171,6 +175,19 @@ class NonMaxSuppressionCalculator : public CalculatorBase {
     cc->SetOffset(TimestampDiff(0));
 
     options_ = cc->Options<NonMaxSuppressionCalculatorOptions>();
+    if (options_.has_min_suppression_threshold()) {
+      RET_CHECK(!cc->Inputs().HasTag(kThresholdTag))
+          << "Using both the threshold option and input stream is not supported.";
+      RET_CHECK(!cc->InputSidePackets().HasTag(kThresholdTag))
+          << "Using both the threshold option and input side packet is not "
+             "supported.";
+      threshold_ = options_.min_suppression_threshold();
+    }
+
+    if (cc->InputSidePackets().HasTag(kThresholdTag)) {
+      threshold_ = cc->InputSidePackets().Tag(kThresholdTag).Get<double>();
+    }
+
     CHECK_GT(options_.num_detection_streams(), 0)
         << "At least one detection stream need to be specified.";
     CHECK_NE(options_.max_num_detections(), 0)
@@ -277,7 +294,7 @@ class NonMaxSuppressionCalculator : public CalculatorBase {
           similarity = OverlapSimilarity(options_.overlap_type(),
                                          retained_location, location);
         }
-        if (similarity > options_.min_suppression_threshold()) {
+        if (similarity > threshold_) {
           suppressed = true;
           break;
         }
@@ -318,7 +335,7 @@ class NonMaxSuppressionCalculator : public CalculatorBase {
         Location rest_location(detections[indexed_score.first].location_data());
         float similarity =
             OverlapSimilarity(options_.overlap_type(), rest_location, location);
-        if (similarity > options_.min_suppression_threshold()) {
+        if (similarity > threshold_) {
           candidates.push_back(indexed_score);
         } else {
           remained.push_back(indexed_score);
@@ -379,6 +396,7 @@ class NonMaxSuppressionCalculator : public CalculatorBase {
   }
 
   NonMaxSuppressionCalculatorOptions options_;
+  double threshold_{};
 };
 REGISTER_CALCULATOR(NonMaxSuppressionCalculator);
 

@@ -148,11 +148,11 @@ InferenceCalculatorCpuImpl::MaybeCreateDelegate(CalculatorContext* cc) {
 #endif  // defined(__EMSCRIPTEN__)
 
   if (use_xnnpack) {
-    auto xnnpack_opts = TfLiteXNNPackDelegateOptionsDefault();
-    xnnpack_opts.num_threads =
-        GetXnnpackNumThreads(opts_has_delegate, opts_delegate);
-    return TfLiteDelegatePtr(TfLiteXNNPackDelegateCreate(&xnnpack_opts),
-                             &TfLiteXNNPackDelegateDelete);
+    // auto xnnpack_opts = TfLiteXNNPackDelegateOptionsDefault();
+    // xnnpack_opts.num_threads =
+    //     GetXnnpackNumThreads(opts_has_delegate, opts_delegate);
+    // return TfLiteDelegatePtr(TfLiteXNNPackDelegateCreate(&xnnpack_opts),
+    //                          &TfLiteXNNPackDelegateDelete);
   }
 
   return nullptr;

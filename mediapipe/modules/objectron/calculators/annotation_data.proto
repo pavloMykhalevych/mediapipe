@@ -16,7 +16,7 @@ syntax = "proto3";
 
 package mediapipe;
 
-import "mediapipe/modules/objectron/calculators/a_r_capture_metadata.proto";
+//import "mediapipe/modules/objectron/calculators/a_r_capture_metadata.proto";
 import "mediapipe/modules/objectron/calculators/object.proto";
 
 // Projection of a 3D point on an image, and its metric depth.
@@ -85,14 +85,14 @@ message FrameAnnotation {
 
   // Information about the camera transformation (in the world coordinate) and
   // imaging characteristics for a captured video frame.
-  ARCamera camera = 3;
+  //ARCamera camera = 3;
 
   // The timestamp for the frame.
-  double timestamp = 4;
+  double timestamp = 3;
 
   // Plane center and normal in camera frame.
-  repeated float plane_center = 5;
-  repeated float plane_normal = 6;
+  repeated float plane_center = 4;
+  repeated float plane_normal = 5;
 }
 
 // The sequence protocol contains the annotation data for the entire video clip.

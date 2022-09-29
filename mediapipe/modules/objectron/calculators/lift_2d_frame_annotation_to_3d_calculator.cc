@@ -31,6 +31,10 @@
 namespace {
 constexpr char kInputStreamTag[] = "FRAME_ANNOTATION";
 constexpr char kOutputStreamTag[] = "LIFTED_FRAME_ANNOTATION";
+constexpr char kFocalXTag[] = "INPUT_FOCAL_X";
+constexpr char kFocalYTag[] = "INPUT_FOCAL_Y";
+constexpr char kPrincipalPointXTag[] = "INPUT_PRINCIPAL_POINT_X";
+constexpr char kPrincipalPointYTag[] = "INPUT_PRINCIPAL_POINT_Y";
 
 // Each detection object will be assigned an unique id that starts from 1.
 static int object_id = 0;
@@ -84,6 +88,18 @@ absl::Status Lift2DFrameAnnotationTo3DCalculator::GetContract(
   RET_CHECK(cc->Outputs().HasTag(kOutputStreamTag));
   cc->Inputs().Tag(kInputStreamTag).Set<FrameAnnotation>();
   cc->Outputs().Tag(kOutputStreamTag).Set<FrameAnnotation>();
+  if (cc->InputSidePackets().HasTag(kFocalXTag)) {
+        cc->InputSidePackets().Tag(kFocalXTag).Set<double>();
+  }
+  if (cc->InputSidePackets().HasTag(kFocalYTag)) {
+        cc->InputSidePackets().Tag(kFocalYTag).Set<double>();
+  }
+  if (cc->InputSidePackets().HasTag(kPrincipalPointXTag)) {
+        cc->InputSidePackets().Tag(kPrincipalPointXTag).Set<double>();
+  }
+  if (cc->InputSidePackets().HasTag(kPrincipalPointYTag)) {
+        cc->InputSidePackets().Tag(kPrincipalPointYTag).Set<double>();
+  }
 
   return absl::OkStatus();
 }
@@ -92,15 +108,35 @@ absl::Status Lift2DFrameAnnotationTo3DCalculator::Open(CalculatorContext* cc) {
   cc->SetOffset(TimestampDiff(0));
   MP_RETURN_IF_ERROR(LoadOptions(cc));
   // Load camera intrinsic matrix.
-  const float fx = options_.normalized_focal_x();
-  const float fy = options_.normalized_focal_y();
-  const float px = options_.normalized_principal_point_x();
-  const float py = options_.normalized_principal_point_y();
-  // clang-format off
-  projection_matrix_ << fx, 0.,  px, 0.,
-                        0., fy,  py, 0.,
-                        0., 0., -1., 0.,
-                        0., 0., -1., 0.;
+  if (options_.has_normalized_focal_x()) {
+    RET_CHECK(!cc->Inputs().HasTag(kFocalXTag))
+        << "Using both the threshold option and input stream is not supported.";
+    RET_CHECK(!cc->InputSidePackets().HasTag(kFocalXTag))
+        << "Using both the threshold option and input side packet is not "
+           "supported.";
+  }
+
+  if (cc->InputSidePackets().HasTag(kFocalXTag)) {
+      const float fx = cc->InputSidePackets().Tag(kFocalXTag).Get<double>();
+      const float fy = cc->InputSidePackets().Tag(kFocalYTag).Get<double>();
+      const float px = cc->InputSidePackets().Tag(kPrincipalPointXTag).Get<double>();
+      const float py = cc->InputSidePackets().Tag(kPrincipalPointYTag).Get<double>();
+      // clang-format off
+      projection_matrix_ << fx, 0.,  px, 0.,
+                            0., fy,  py, 0.,
+                            0., 0., -1., 0.,
+                            0., 0., -1., 0.;
+  }else{
+      const float fx = options_.normalized_focal_x();
+      const float fy = options_.normalized_focal_y();
+      const float px = options_.normalized_principal_point_x();
+      const float py = options_.normalized_principal_point_y();
+      // clang-format off
+      projection_matrix_ << fx, 0.,  px, 0.,
+                            0., fy,  py, 0.,
+                            0., 0., -1., 0.,
+                            0., 0., -1., 0.;
+  }
   // clang-format on
   decoder_ = absl::make_unique<Decoder>(
       BeliefDecoderConfig(options_.decoder_config()));
