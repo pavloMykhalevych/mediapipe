@@ -27,6 +27,7 @@ cc_library(
     ],
     deps = [
         "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework/formats:landmark_cc_proto",
         "//mediapipe/framework/formats:detection_cc_proto",
     ],
     alwayslink = 1,

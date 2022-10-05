@@ -16,7 +16,6 @@
 #define MEDIAPIPE_CALCULATORS_UTIL_COUNTING_VECTOR_SIZE_CALCULATOR_H
 
 #include "mediapipe/framework/calculator_framework.h"
-#include "mediapipe/framework/formats/detection.pb.h"
 
 namespace mediapipe {
 

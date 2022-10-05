@@ -13,12 +13,19 @@
 // limitations under the License.
 
 #include "mediapipe/calculators/util/check_vector_empty_calculator.h"
+#include "mediapipe/framework/formats/landmark.pb.h"
+#include "mediapipe/framework/formats/detection.pb.h"
 
 namespace mediapipe {
+
+typedef CheckVectorEmptyCalculator<
+    std::vector<NormalizedLandmarkList>>
+    CheckLandmarksVectorEmptyCalculator;
 
 typedef CheckVectorEmptyCalculator<
     std::vector<Detection>>
     CheckDetectionsVectorEmptyCalculator;
 
+REGISTER_CALCULATOR(CheckLandmarksVectorEmptyCalculator);
 REGISTER_CALCULATOR(CheckDetectionsVectorEmptyCalculator);
 } // namespace mediapipe
