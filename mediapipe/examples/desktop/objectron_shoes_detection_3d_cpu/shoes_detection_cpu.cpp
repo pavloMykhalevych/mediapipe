@@ -9,12 +9,12 @@ int main(int argc, char **argv) {
   absl::ParseCommandLine(argc, argv);
 
   cv::VideoCapture capture;
-  capture.open("/home/pavlik/Downloads/Telegram Desktop/video_feets2.mp4");
+  capture.open("/home/pavlik/Downloads/Telegram Desktop/video_feets.mp4");
   if (!capture.isOpened()) {
     return -1;
   }
+
   constexpr char boxLandmarkModelPath[] = "mediapipe/modules/objectron/object_detection_3d_sneakers.tflite";
-  constexpr char oidModelPath[] = "mediapipe/modules/objectron/object_detection_ssd_mobilenetv2_oidv4_fp16.tflite";
   constexpr char allowedLabels[] = "Footwear";
   constexpr int maxMumObjects = 5;
   constexpr bool usePrevLandmarks = true;
@@ -26,8 +26,6 @@ int main(int argc, char **argv) {
   constexpr float inputPrincipalPointY = 618.1427265759373;
   int imageWidth = capture.get(cv::CAP_PROP_FRAME_WIDTH);
   int imageHeight = capture.get(cv::CAP_PROP_FRAME_HEIGHT);
-
-  //cv::VideoWriter out("/home/pavlik/video_results/outpy.avi", cv::VideoWriter::fourcc('M','J','P','G'), 30, cv::Size(imageWidth,imageHeight));
 
   constexpr char kWindowName[] = "MediaPipe";
   cv::namedWindow(kWindowName, 1);
@@ -44,14 +42,13 @@ int main(int argc, char **argv) {
     windowHeight = 720;
     windowWidth  /= ratio;
   }
-  
+
   cv::resizeWindow(kWindowName, cv::Size(windowWidth, windowHeight));
 
   LOG(INFO) << "VideoCapture initialized.";
 
   MPShoesDetector *shoesDetector = MPShoesDetectorConstruct(
     boxLandmarkModelPath,
-    oidModelPath,
     allowedLabels,
     maxMumObjects,
     usePrevLandmarks,
@@ -72,7 +69,9 @@ int main(int argc, char **argv) {
   objects.resize(maxMumObjects);
   bool grab_frames = true;
   int frame_count = 0;
+
   auto start = std::chrono::high_resolution_clock::now();
+
   while (grab_frames) {
     // Capture opencv camera.
     cv::Mat camera_frame_raw;
@@ -83,7 +82,7 @@ int main(int argc, char **argv) {
     }
 
     cv::Mat camera_frame;
-    cv::cvtColor(camera_frame_raw, camera_frame, cv::COLOR_BGR2RGBA);
+    cv::cvtColor(camera_frame_raw, camera_frame, cv::COLOR_BGR2RGB);
 
     int objectsCount = 0;
     const float fps = capture.get(cv::CAP_PROP_FPS);
@@ -99,10 +98,9 @@ int main(int argc, char **argv) {
         for (const auto& keypoint : objects[i].Keypoints) {
           if(!keypoint.hidden)
           {
-            cv::circle(camera_frame_raw, keypoint.PointCoordinates2D, 10, cv::Scalar(0, 0, 255));
+            cv::circle(camera_frame_raw, keypoint.PointCoordinates2D, 5, cv::Scalar(0, 0, 255), -1);
           }
         }
-        
         for (const auto& keypoint1 : objects[i].Keypoints) {
           for (const auto& keypoint2: objects[i].Keypoints) {
             if(keypoint1.keypoint_id != 9 || keypoint2.keypoint_id != 9)
@@ -113,19 +111,14 @@ int main(int argc, char **argv) {
         }
       }
     }
-
 		long int frametime_us = (std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()-start).count());
 		float frametime_s = frametime_us/1e6f;
     float fps1 = 1 / frametime_s;
     std::cout << "fps = " << fps1 << std::endl;
-
     const int pressed_key = cv::waitKey(5);
     if (pressed_key >= 0 && pressed_key != 255)
       grab_frames = false;
     auto copy_frame = camera_frame_raw.clone();
-
-    //out.write(camera_frame_raw);
-
     cv::resize(copy_frame, copy_frame, cv::Size(windowWidth, windowHeight));
     cv::imshow(kWindowName, copy_frame);
 
@@ -134,7 +127,6 @@ int main(int argc, char **argv) {
   }
 
   std::cout << "Shutting down.";
-  //out.release();
-  capture.release();
+
   MPShoesDetectorDestruct(shoesDetector);
 }
