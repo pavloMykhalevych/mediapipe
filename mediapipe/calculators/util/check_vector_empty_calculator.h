@@ -31,6 +31,7 @@ namespace mediapipe {
 //
 // node {
 //   calculator: "CheckVectorEmptyCalculator"
+//   input_stream: "CLOCK:image"
 //   input_stream: "VECTOR:input_vector"
 //   output_stream: "EMPTY:vector_empty"
 // }
@@ -39,7 +40,9 @@ template <typename VectorT>
 class CheckVectorEmptyCalculator : public CalculatorBase {
 public:
   static ::mediapipe::Status GetContract(CalculatorContract *cc) {
-   
+    if (cc->Inputs().HasTag("CLOCK")) {
+      cc->Inputs().Tag("CLOCK").SetAny();
+    }
     RET_CHECK(cc->Inputs().HasTag("VECTOR"));
     cc->Inputs().Tag("VECTOR").Set<VectorT>();
     RET_CHECK(cc->Outputs().HasTag("EMPTY"));
@@ -51,6 +54,7 @@ public:
   ::mediapipe::Status Process(CalculatorContext *cc) {
     std::unique_ptr<bool> vector_empty;
     bool test;
+    LOG(INFO) << "CheckVectorEmptyCalculator start. ";
     if (!cc->Inputs().Tag("VECTOR").IsEmpty()) {
       const auto &landmarks = cc->Inputs().Tag("VECTOR").Get<VectorT>();
       vector_empty = absl::make_unique<bool>(landmarks.empty());

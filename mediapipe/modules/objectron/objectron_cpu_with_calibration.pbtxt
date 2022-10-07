@@ -126,12 +126,6 @@ node {
   output_stream: "SIZE:image_size"
 }
 
-node {
-  calculator: "CheckDetectionsVectorEmptyCalculator"
-  input_stream: "VECTOR:detections"
-  output_stream: "EMPTY:detection_empty"
-}
-
 # Converts results of box detection into rectangles (normalized by image size)
 # that encloses the box.
 node {
@@ -194,6 +188,13 @@ node {
   input_stream: "ITEM:single_box_landmarks"
   input_stream: "BATCH_END:box_rects_timestamp"
   output_stream: "ITERABLE:multi_box_landmarks"
+}
+
+node {
+  calculator: "CheckLandmarksVectorEmptyCalculator"
+  input_stream: "CLOCK:image"
+  input_stream: "VECTOR:multi_box_landmarks"
+  output_stream: "EMPTY:detection_empty"
 }
 
 # Convert box landmarks to frame annotations.
