@@ -91,7 +91,9 @@ absl::Status DetectionLabelIdToTextCalculator::Open(CalculatorContext* cc) {
     int i = 0;
     while (std::getline(stream, line)) {
       LabelMapItem item;
+#ifdef _WIN32
       line.pop_back();
+#endif
       item.set_name(line);
       local_label_map_[i++] = item;
     }

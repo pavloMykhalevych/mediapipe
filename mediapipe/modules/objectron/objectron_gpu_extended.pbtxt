@@ -158,6 +158,7 @@ node {
 
 node {
   calculator: "CheckLandmarksVectorEmptyCalculator"
+  input_stream: "CLOCK:image"
   input_stream: "VECTOR:multi_box_landmarks"
   output_stream: "EMPTY:landmarks_empty"
 }

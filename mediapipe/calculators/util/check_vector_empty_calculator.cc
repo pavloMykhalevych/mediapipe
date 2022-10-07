@@ -14,8 +14,6 @@
 
 #include "mediapipe/calculators/util/check_vector_empty_calculator.h"
 #include "mediapipe/framework/formats/landmark.pb.h"
-#include "mediapipe/framework/formats/detection.pb.h"
-#include "mediapipe/framework/formats/rect.pb.h"
 
 namespace mediapipe {
 
@@ -23,15 +21,5 @@ typedef CheckVectorEmptyCalculator<
     std::vector<::mediapipe::NormalizedLandmarkList>>
     CheckLandmarksVectorEmptyCalculator;
 REGISTER_CALCULATOR(CheckLandmarksVectorEmptyCalculator);
-
-typedef CheckVectorEmptyCalculator<
-    std::vector<::mediapipe::Detection>>
-    CheckDetectionsVectorEmptyCalculator;
-REGISTER_CALCULATOR(CheckDetectionsVectorEmptyCalculator);
-
-typedef CheckVectorEmptyCalculator<
-    std::vector<::mediapipe::NormalizedRect>>
-    CheckRectsVectorEmptyCalculator;
-REGISTER_CALCULATOR(CheckRectsVectorEmptyCalculator);
 
 } // namespace mediapipe

@@ -9,16 +9,16 @@ int main(int argc, char **argv) {
   absl::ParseCommandLine(argc, argv);
 
   cv::VideoCapture capture;
-  capture.open("/home/pavlik/Downloads/Telegram Desktop/video_feets2.mp4");
+  capture.open("/home/pavlik/Downloads/Telegram Desktop/video_feets.mp4");
   if (!capture.isOpened()) {
     return -1;
   }
   constexpr char boxLandmarkModelPath[] = "mediapipe/modules/objectron/object_detection_3d_sneakers.tflite";
   constexpr char oidModelPath[] = "mediapipe/modules/objectron/object_detection_ssd_mobilenetv2_oidv4_fp16.tflite";
   constexpr char allowedLabels[] = "Footwear";
-  constexpr int maxMumObjects = 5;
+  constexpr int maxMumObjects = 2;
   constexpr bool usePrevLandmarks = true;
-  constexpr float minTrackingThreshold = 0.7;
+  constexpr float minTrackingThreshold = 0.99;
   constexpr float minDetectingThreshold = 0.7;
   constexpr float inputFocalX = 1184.1984137201562;
   constexpr float inputFocalY = 1186.2353791810572;
