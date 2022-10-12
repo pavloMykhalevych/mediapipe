@@ -929,6 +929,23 @@ mediapipe_cc_proto_library(
     deps = [":copy_calculator_proto"],
 )
 
+proto_library(
+    name = "gl_animation_overlay_calculator_proto",
+    srcs = ["gl_animation_overlay_calculator.proto"],
+    visibility = ["//visibility:public"],
+    deps = ["//mediapipe/framework:calculator_proto"],
+)
+
+mediapipe_cc_proto_library(
+    name = "gl_animation_overlay_calculator_cc_proto",
+    srcs = ["gl_animation_overlay_calculator.proto"],
+    cc_deps = [
+        "//mediapipe/framework:calculator_cc_proto",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [":gl_animation_overlay_calculator_proto"],
+)
+
 objc_library(
     name = "metal_copy_calculator",
     srcs = ["MetalCopyCalculator.mm"],

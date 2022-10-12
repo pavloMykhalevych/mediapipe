@@ -38,6 +38,20 @@ cc_library(
 )
 
 cc_library(
+    name = "mobile_calculators_extended",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//mediapipe/calculators/core:flow_limiter_calculator",
+        "//mediapipe/calculators/image:image_cropping_calculator",
+        "//mediapipe/graphs/object_detection_3d/calculators:annotations_to_model_matrices_calculator",
+        "//mediapipe/graphs/object_detection_3d/calculators:gl_animation_overlay_calculator",
+        "//mediapipe/modules/objectron:objectron_gpu_extended",
+        "//mediapipe/calculators/tflite:tflite_model_calculator",
+        "//mediapipe/calculators/util:local_file_contents_calculator",
+    ],
+)
+
+cc_library(
     name = "mobile_calculators_1stage",
     visibility = ["//visibility:public"],
     deps = [
@@ -81,6 +95,14 @@ mediapipe_binary_graph(
     output_name = "mobile_gpu_binary_graph.binarypb",
     visibility = ["//visibility:public"],
     deps = [":mobile_calculators"],
+)
+
+mediapipe_binary_graph(
+    name = "mobile_gpu_binary_graph_modified",
+    graph = "object_occlusion_tracking_modified.pbtxt",
+    output_name = "mobile_gpu_binary_graph_modified.binarypb",
+    visibility = ["//visibility:public"],
+    deps = [":mobile_calculators_extended"],
 )
 
 mediapipe_binary_graph(
