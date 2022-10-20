@@ -157,6 +157,8 @@ node {
     [mediapipe.Lift2DFrameAnnotationTo3DCalculatorOptions.ext] {
       normalized_focal_x: 2.0975
       normalized_focal_y: 1.5731
+      normalized_principal_point_x: 0
+      normalized_principal_point_y: 0
     }
   }
 }
